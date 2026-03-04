@@ -1,0 +1,140 @@
+[
+  {
+    "name": "campaigns",
+    "type": "base",
+    "schema": [
+      { "name": "name", "type": "text", "required": true },
+      { "name": "status", "type": "select", "options": { "values": ["draft", "active", "paused", "completed"] } },
+      { "name": "email_account_id", "type": "relation", "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
+      { "name": "daily_limit", "type": "number", "options": { "min": 1, "max": 500 } },
+      { "name": "delay_between_emails", "type": "number" },
+      { "name": "tracking_enabled", "type": "bool" },
+      { "name": "ab_testing_enabled", "type": "bool" },
+      { "name": "ab_variant_split", "type": "number", "options": { "min": 0, "max": 100 } },
+      { "name": "scheduled_at", "type": "date" },
+      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "sequences",
+    "type": "base",
+    "schema": [
+      { "name": "campaign_id", "type": "relation", "required": true, "options": { "collectionId": "campaigns", "maxSelect": 1 } },
+      { "name": "order", "type": "number", "required": true },
+      { "name": "subject", "type": "text" },
+      { "name": "body", "type": "editor" },
+      { "name": "delay_days", "type": "number" },
+      { "name": "variant", "type": "select", "options": { "values": ["A", "B"] } }
+    ]
+  },
+  {
+    "name": "contacts",
+    "type": "base",
+    "schema": [
+      { "name": "email", "type": "email", "required": true },
+      { "name": "first_name", "type": "text" },
+      { "name": "last_name", "type": "text" },
+      { "name": "company", "type": "text" },
+      { "name": "title", "type": "text" },
+      { "name": "phone", "type": "text" },
+      { "name": "custom_fields", "type": "json" },
+      { "name": "tags", "type": "json" },
+      { "name": "status", "type": "select", "options": { "values": ["active", "unsubscribed", "bounced"] } },
+      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "contact_lists",
+    "type": "base",
+    "schema": [
+      { "name": "name", "type": "text", "required": true },
+      { "name": "description", "type": "text" },
+      { "name": "contact_count", "type": "number" },
+      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "contact_list_members",
+    "type": "base",
+    "schema": [
+      { "name": "contact_list_id", "type": "relation", "required": true, "options": { "collectionId": "contact_lists", "maxSelect": 1 } },
+      { "name": "contact_id", "type": "relation", "required": true, "options": { "collectionId": "contacts", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "email_accounts",
+    "type": "base",
+    "schema": [
+      { "name": "email", "type": "email", "required": true },
+      { "name": "display_name", "type": "text", "required": true },
+      { "name": "smtp_host", "type": "text", "required": true },
+      { "name": "smtp_port", "type": "number", "required": true },
+      { "name": "smtp_username", "type": "text", "required": true },
+      { "name": "smtp_password", "type": "text", "required": true },
+      { "name": "imap_host", "type": "text" },
+      { "name": "imap_port", "type": "number" },
+      { "name": "daily_send_limit", "type": "number" },
+      { "name": "signature", "type": "editor" },
+      { "name": "is_verified", "type": "bool" },
+      { "name": "is_warming", "type": "bool" },
+      { "name": "warming_daily_increase", "type": "number" },
+      { "name": "warming_current_limit", "type": "number" },
+      { "name": "warming_started_at", "type": "date" },
+      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "custom_domains",
+    "type": "base",
+    "schema": [
+      { "name": "domain", "type": "text", "required": true },
+      { "name": "tracking_subdomain", "type": "text" },
+      { "name": "dkim_verified", "type": "bool" },
+      { "name": "spf_verified", "type": "bool" },
+      { "name": "dmarc_verified", "type": "bool" },
+      { "name": "dkim_record", "type": "text" },
+      { "name": "spf_record", "type": "text" },
+      { "name": "dmarc_record", "type": "text" },
+      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
+    ]
+  },
+  {
+    "name": "campaign_contacts",
+    "type": "base",
+    "schema": [
+      { "name": "campaign_id", "type": "relation", "required": true, "options": { "collectionId": "campaigns", "maxSelect": 1 } },
+      { "name": "contact_id", "type": "relation", "required": true, "options": { "collectionId": "contacts", "maxSelect": 1 } },
+      { "name": "contact_list_id", "type": "relation", "options": { "collectionId": "contact_lists", "maxSelect": 1 } },
+      { "name": "status", "type": "select", "options": { "values": ["pending", "in_progress", "completed", "failed", "unsubscribed"] } },
+      { "name": "current_sequence_order", "type": "number" },
+      { "name": "last_sent_at", "type": "date" }
+    ]
+  },
+  {
+    "name": "email_logs",
+    "type": "base",
+    "schema": [
+      { "name": "campaign_id", "type": "relation", "options": { "collectionId": "campaigns", "maxSelect": 1 } },
+      { "name": "sequence_id", "type": "relation", "options": { "collectionId": "sequences", "maxSelect": 1 } },
+      { "name": "contact_id", "type": "relation", "options": { "collectionId": "contacts", "maxSelect": 1 } },
+      { "name": "email_account_id", "type": "relation", "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
+      { "name": "status", "type": "select", "options": { "values": ["sent", "delivered", "opened", "clicked", "bounced", "failed"] } },
+      { "name": "variant", "type": "select", "options": { "values": ["A", "B"] } },
+      { "name": "subject", "type": "text" },
+      { "name": "body", "type": "editor" },
+      { "name": "sent_at", "type": "date" },
+      { "name": "opened_at", "type": "date" },
+      { "name": "clicked_at", "type": "date" }
+    ]
+  },
+  {
+    "name": "warming_logs",
+    "type": "base",
+    "schema": [
+      { "name": "email_account_id", "type": "relation", "required": true, "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
+      { "name": "emails_sent", "type": "number" },
+      { "name": "emails_received", "type": "number" },
+      { "name": "date", "type": "date" }
+    ]
+  }
+]
