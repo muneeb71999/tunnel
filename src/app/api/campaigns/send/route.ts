@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 import { sendEmail, personalizeContent, selectABVariant } from "@/lib/email-engine";
 import type { EmailAccount, Contact, Sequence } from "@/types";
 
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Missing campaign_id" }, { status: 400 });
     }
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
     const campaign = await pb.collection("campaigns").getOne(campaign_id);
 
     if (campaign.status !== "active") {
@@ -28,6 +28,10 @@ export async function POST(req: NextRequest) {
     let emailsSent = 0;
 
     for (const campaignContact of pendingContacts.items) {
+      // Re-check campaign status in case it was paused mid-batch
+      const freshCampaign = await pb.collection("campaigns").getOne(campaign_id);
+      if (freshCampaign.status !== "active") break;
+
       const contact = campaignContact.expand?.contact_id as unknown as Contact;
       if (!contact) continue;
 
@@ -60,25 +64,56 @@ export async function POST(req: NextRequest) {
         if (daysSince < sequence.delay_days) continue;
       }
 
-      try {
-        await sendEmail(emailAccount, contact, sequence);
+      // Dedup: skip if this exact email was already sent
+      const alreadySent = await pb.collection("email_logs").getList(1, 1, {
+        filter: `campaign_id = "${campaign_id}" && contact_id = "${contact.id}" && sequence_id = "${sequence.id}" && (status = "sent" || status = "sending")`,
+      });
+      if (alreadySent.totalItems > 0) {
+        // Email was sent but campaign_contact wasn't updated — fix it now
+        const totalSteps = await pb.collection("sequences").getList(1, 1, {
+          filter: `campaign_id = "${campaign_id}" && variant = "${variant}" && order > ${nextOrder}`,
+        });
+        await pb.collection("campaign_contacts").update(campaignContact.id, {
+          status: totalSteps.totalItems === 0 ? "completed" : "in_progress",
+          current_sequence_order: nextOrder,
+          last_sent_at: alreadySent.items[0].sent_at || new Date().toISOString(),
+        });
+        continue;
+      }
 
-        // Log the email
-        await pb.collection("email_logs").create({
+      // Create log BEFORE sending so we have an ID for tracking URLs
+      let emailLog: { id: string } | null = null;
+      try {
+        emailLog = await pb.collection("email_logs").create({
           campaign_id,
           sequence_id: sequence.id,
           contact_id: contact.id,
           email_account_id: emailAccount.id,
-          status: "sent",
+          status: "sending",
           variant,
           subject: personalizeContent(sequence.subject, contact),
           body: personalizeContent(sequence.body, contact),
+        });
+
+        const tracking = campaign.tracking_enabled
+          ? { baseUrl: process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin, emailLogId: emailLog.id }
+          : undefined;
+
+        await sendEmail(emailAccount, contact, sequence, tracking);
+
+        await pb.collection("email_logs").update(emailLog.id, {
+          status: "sent",
           sent_at: new Date().toISOString(),
+        });
+
+        // Check if there are more steps after this one
+        const remainingSteps = await pb.collection("sequences").getList(1, 1, {
+          filter: `campaign_id = "${campaign_id}" && variant = "${variant}" && order > ${nextOrder}`,
         });
 
         // Update campaign contact
         await pb.collection("campaign_contacts").update(campaignContact.id, {
-          status: "in_progress",
+          status: remainingSteps.totalItems === 0 ? "completed" : "in_progress",
           current_sequence_order: nextOrder,
           last_sent_at: new Date().toISOString(),
         });
@@ -95,16 +130,9 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         console.error(`Failed to send email to ${contact.email}:`, error);
 
-        await pb.collection("email_logs").create({
-          campaign_id,
-          sequence_id: sequence.id,
-          contact_id: contact.id,
-          email_account_id: emailAccount.id,
-          status: "failed",
-          variant,
-          subject: personalizeContent(sequence.subject, contact),
-          body: personalizeContent(sequence.body, contact),
-        });
+        if (emailLog) {
+          await pb.collection("email_logs").update(emailLog.id, { status: "failed" });
+        }
       }
     }
 

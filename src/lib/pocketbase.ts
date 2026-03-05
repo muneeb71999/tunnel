@@ -20,3 +20,14 @@ export default pb;
 export function createServerPb() {
   return new PocketBase(POCKETBASE_URL);
 }
+
+export async function createSuperuserPb() {
+  const superuserPb = new PocketBase(POCKETBASE_URL);
+  const email = process.env.PB_SUPERUSER_EMAIL;
+  const password = process.env.PB_SUPERUSER_PASSWORD;
+  if (!email || !password) {
+    throw new Error("PB_SUPERUSER_EMAIL and PB_SUPERUSER_PASSWORD env vars are required");
+  }
+  await superuserPb.collection("_superusers").authWithPassword(email, password);
+  return superuserPb;
+}

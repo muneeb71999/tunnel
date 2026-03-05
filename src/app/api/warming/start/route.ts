@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 
 export async function POST(req: NextRequest) {
   try {
     const { account_id } = await req.json();
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
 
     await pb.collection("email_accounts").update(account_id, {
       is_warming: true,

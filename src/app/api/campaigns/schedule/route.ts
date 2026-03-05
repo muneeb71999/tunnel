@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 
 export async function POST(req: NextRequest) {
   try {
     const { campaign_id, schedule_time } = await req.json();
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
 
     // Update campaign with scheduled time and activate
     await pb.collection("campaigns").update(campaign_id, {

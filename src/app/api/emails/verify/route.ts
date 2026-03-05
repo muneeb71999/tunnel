@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 import nodemailer from "nodemailer";
 
 export async function POST(req: NextRequest) {
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Missing account_id" }, { status: 400 });
     }
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
     const account = await pb.collection("email_accounts").getOne(account_id);
 
     const transport = nodemailer.createTransport({

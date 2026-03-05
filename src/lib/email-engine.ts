@@ -41,25 +41,45 @@ export function personalizeContent(
   return result;
 }
 
+export function addTracking(html: string, baseUrl: string, emailLogId: string): string {
+  // Rewrite <a href="..."> links to go through click tracker
+  let tracked = html.replace(
+    /<a\s([^>]*?)href=["']([^"']+)["']([^>]*)>/gi,
+    (_match, before: string, href: string, after: string) => {
+      // Don't track mailto: or # links
+      if (href.startsWith("mailto:") || href.startsWith("#")) {
+        return `<a ${before}href="${href}"${after}>`;
+      }
+      const trackUrl = `${baseUrl}/api/track/click?id=${encodeURIComponent(emailLogId)}&url=${encodeURIComponent(href)}`;
+      return `<a ${before}href="${trackUrl}"${after}>`;
+    }
+  );
+
+  // Append open tracking pixel
+  tracked += `<img src="${baseUrl}/api/track/open?id=${encodeURIComponent(emailLogId)}" width="1" height="1" style="display:none" alt="" />`;
+
+  return tracked;
+}
+
 export async function sendEmail(
   account: EmailAccount,
   contact: Contact,
   sequence: Sequence,
-  trackingPixelUrl?: string
+  tracking?: { baseUrl: string; emailLogId: string }
 ) {
   const transport = createTransport(account);
 
   const subject = personalizeContent(sequence.subject, contact);
   let body = personalizeContent(sequence.body, contact);
 
-  // Add tracking pixel if tracking is enabled
-  if (trackingPixelUrl) {
-    body += `<img src="${trackingPixelUrl}" width="1" height="1" style="display:none" />`;
-  }
-
-  // Add signature
+  // Add signature before tracking (so signature links also get tracked)
   if (account.signature) {
     body += `<br/><br/>${account.signature}`;
+  }
+
+  // Add open/click tracking
+  if (tracking) {
+    body = addTracking(body, tracking.baseUrl, tracking.emailLogId);
   }
 
   const result = await transport.sendMail({
