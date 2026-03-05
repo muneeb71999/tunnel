@@ -105,6 +105,18 @@ export default function CampaignDetailPage() {
     if (!campaign) return;
     const newStatus = campaign.status === "active" ? "paused" : "active";
     await pb.collection("campaigns").update(id, { status: newStatus });
+
+    // If activating, trigger a send (dedup in the send route prevents double-sends)
+    if (newStatus === "active") {
+      fetch("/api/campaigns/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_id: id }),
+      }).catch(() => {
+        // The cron job will pick it up on the next cycle
+      });
+    }
+
     loadCampaign();
   }
 

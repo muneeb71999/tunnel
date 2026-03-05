@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 import Papa from "papaparse";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
     const rows = parsed.data as Record<string, string>[];
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
     let success = 0;
     let failed = 0;
 

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerPb } from "@/lib/pocketbase";
+import { createSuperuserPb } from "@/lib/pocketbase";
 import nodemailer from "nodemailer";
 
 export async function POST(req: NextRequest) {
   try {
     const { account_id, to_email, subject, body } = await req.json();
 
-    const pb = createServerPb();
+    const pb = await createSuperuserPb();
     const account = await pb.collection("email_accounts").getOne(account_id);
 
     const transport = nodemailer.createTransport({

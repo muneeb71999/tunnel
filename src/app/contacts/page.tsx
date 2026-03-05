@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Upload, Search, Trash2, Tag, Users } from "lucide-react";
-import Card, { CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, Upload, Search, Trash2, Tag, Users, UserPlus, ArrowLeft, X } from "lucide-react";
+import Card from "@/components/ui/card";
 import Button from "@/components/ui/button";
 import Badge from "@/components/ui/badge";
 import Input from "@/components/ui/input";
 import Modal from "@/components/ui/modal";
 import pb from "@/lib/pocketbase";
-import type { Contact, ContactList } from "@/types";
+import type { Contact, ContactList, ContactListMember } from "@/types";
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -30,6 +30,14 @@ export default function ContactsPage() {
   // New list form
   const [newListName, setNewListName] = useState("");
   const [newListDesc, setNewListDesc] = useState("");
+
+  // Add to list
+  const [showAddToListModal, setShowAddToListModal] = useState(false);
+  const [addToListContactId, setAddToListContactId] = useState<string | null>(null);
+
+  // View list members
+  const [selectedList, setSelectedList] = useState<ContactList | null>(null);
+  const [listMembers, setListMembers] = useState<(ContactListMember & { expand?: { contact_id: Contact } })[]>([]);
 
   useEffect(() => {
     loadData();
@@ -100,6 +108,66 @@ export default function ContactsPage() {
       loadData();
     } catch {
       alert("Failed to delete contact");
+    }
+  }
+
+  function openAddToList(contactId: string) {
+    setAddToListContactId(contactId);
+    setShowAddToListModal(true);
+  }
+
+  async function addContactToList(listId: string) {
+    if (!addToListContactId) return;
+    try {
+      await pb.collection("contact_list_members").create({
+        contact_list_id: listId,
+        contact_id: addToListContactId,
+      });
+      // Update list contact count
+      const list = lists.find((l) => l.id === listId);
+      if (list) {
+        await pb.collection("contact_lists").update(listId, {
+          contact_count: (list.contact_count || 0) + 1,
+        });
+      }
+      setShowAddToListModal(false);
+      setAddToListContactId(null);
+      loadData();
+      if (selectedList?.id === listId) loadListMembers(listId);
+    } catch {
+      alert("Failed to add contact to list. It may already be in this list.");
+    }
+  }
+
+  async function loadListMembers(listId: string) {
+    try {
+      const result = await pb.collection("contact_list_members").getList(1, 200, {
+        filter: `contact_list_id = "${listId}"`,
+        expand: "contact_id",
+        sort: "-created",
+      });
+      setListMembers(result.items as unknown as typeof listMembers);
+    } catch {
+      setListMembers([]);
+    }
+  }
+
+  function openListDetail(list: ContactList) {
+    setSelectedList(list);
+    loadListMembers(list.id);
+  }
+
+  async function removeFromList(memberId: string) {
+    if (!selectedList) return;
+    try {
+      await pb.collection("contact_list_members").delete(memberId);
+      await pb.collection("contact_lists").update(selectedList.id, {
+        contact_count: Math.max((selectedList.contact_count || 1) - 1, 0),
+      });
+      loadListMembers(selectedList.id);
+      loadData();
+    } catch {
+      alert("Failed to remove contact from list");
     }
   }
 
@@ -212,9 +280,14 @@ export default function ContactsPage() {
                           </Badge>
                         </td>
                         <td className="py-3 px-4">
-                          <button onClick={() => deleteContact(contact.id)} className="text-red-500 hover:text-red-700">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => openAddToList(contact.id)} className="text-blue-500 hover:text-blue-700" title="Add to list">
+                              <UserPlus className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => deleteContact(contact.id)} className="text-red-500 hover:text-red-700" title="Delete">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -231,7 +304,58 @@ export default function ContactsPage() {
               <Plus className="w-4 h-4 mr-1" /> New List
             </Button>
           </div>
-          {lists.length === 0 ? (
+          {selectedList ? (
+            <div>
+              <button
+                onClick={() => setSelectedList(null)}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to lists
+              </button>
+              <Card>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">{selectedList.name}</h3>
+                    <p className="text-sm text-gray-500">{selectedList.description || "No description"}</p>
+                  </div>
+                  <Badge>{listMembers.length} contacts</Badge>
+                </div>
+                {listMembers.length === 0 ? (
+                  <p className="text-center text-gray-400 py-8">No contacts in this list yet. Use the <UserPlus className="w-4 h-4 inline" /> button on a contact to add them.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b bg-gray-50">
+                          <th className="text-left py-3 px-4 font-medium text-gray-500">Name</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-500">Email</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-500">Company</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-500">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listMembers.map((member) => {
+                          const contact = member.expand?.contact_id;
+                          return (
+                            <tr key={member.id} className="border-b last:border-0 hover:bg-gray-50">
+                              <td className="py-3 px-4 font-medium">{contact?.first_name} {contact?.last_name}</td>
+                              <td className="py-3 px-4 text-gray-600">{contact?.email}</td>
+                              <td className="py-3 px-4 text-gray-600">{contact?.company}</td>
+                              <td className="py-3 px-4">
+                                <button onClick={() => removeFromList(member.id)} className="text-red-500 hover:text-red-700" title="Remove from list">
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </Card>
+            </div>
+          ) : lists.length === 0 ? (
             <Card className="text-center py-16">
               <Tag className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-medium mb-2">No contact lists</h3>
@@ -239,7 +363,7 @@ export default function ContactsPage() {
             </Card>
           ) : (
             lists.map((list) => (
-              <Card key={list.id}>
+              <Card key={list.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => openListDetail(list)}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-gray-900">{list.name}</h3>
@@ -280,6 +404,31 @@ export default function ContactsPage() {
             <Button type="submit">Create List</Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Add to List Modal */}
+      <Modal isOpen={showAddToListModal} onClose={() => { setShowAddToListModal(false); setAddToListContactId(null); }} title="Add Contact to List">
+        {lists.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500 mb-4">No lists yet. Create a list first.</p>
+            <Button onClick={() => { setShowAddToListModal(false); setActiveTab("lists"); setShowListModal(true); }}>
+              Create List
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {lists.map((list) => (
+              <button
+                key={list.id}
+                onClick={() => addContactToList(list.id)}
+                className="w-full text-left p-3 rounded-lg border hover:bg-blue-50 hover:border-blue-300 transition-colors"
+              >
+                <div className="font-medium text-gray-900">{list.name}</div>
+                <div className="text-sm text-gray-500">{list.contact_count || 0} contacts</div>
+              </button>
+            ))}
+          </div>
+        )}
       </Modal>
     </div>
   );

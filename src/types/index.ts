@@ -136,7 +136,7 @@ export interface EmailLog {
   sequence_id: string;
   contact_id: string;
   email_account_id: string;
-  status: "sent" | "delivered" | "opened" | "clicked" | "bounced" | "failed";
+  status: "sending" | "sent" | "delivered" | "opened" | "clicked" | "bounced" | "failed";
   variant: "A" | "B";
   subject: string;
   body: string;
