@@ -1,140 +1,417 @@
 [
   {
+    "id": "pbc_3142635823",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "_superusers",
+    "type": "auth",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cost": 0, "hidden": true, "id": "password901924565", "max": 0, "min": 8, "name": "password", "pattern": "", "presentable": false, "required": true, "system": true, "type": "password" },
+      { "autogeneratePattern": "[a-zA-Z0-9]{50}", "hidden": true, "id": "text2504183744", "max": 60, "min": 30, "name": "tokenKey", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "exceptDomains": null, "hidden": false, "id": "email3885137012", "name": "email", "onlyDomains": null, "presentable": false, "required": true, "system": true, "type": "email" },
+      { "hidden": false, "id": "bool1547992806", "name": "emailVisibility", "presentable": false, "required": false, "system": true, "type": "bool" },
+      { "hidden": false, "id": "bool256245529", "name": "verified", "presentable": false, "required": false, "system": true, "type": "bool" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": true, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": true, "type": "autodate" }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_tokenKey_pbc_3142635823` ON `_superusers` (`tokenKey`)",
+      "CREATE UNIQUE INDEX `idx_email_pbc_3142635823` ON `_superusers` (`email`) WHERE `email` != ''"
+    ],
+    "system": true,
+    "authRule": "",
+    "manageRule": null,
+    "authAlert": { "enabled": true, "emailTemplate": { "subject": "Login from a new location", "body": "<p>Hello,</p>\n<p>We noticed a login to your {APP_NAME} account from a new location:</p>\n<p><em>{ALERT_INFO}</em></p>\n<p><strong>If this wasn't you, you should immediately change your {APP_NAME} account password to revoke access from all other locations.</strong></p>\n<p>If this was you, you may disregard this email.</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" } },
+    "oauth2": { "mappedFields": { "id": "", "name": "", "username": "", "avatarURL": "" }, "enabled": false },
+    "passwordAuth": { "enabled": true, "identityFields": ["email"] },
+    "mfa": { "enabled": false, "duration": 1800, "rule": "" },
+    "otp": { "enabled": false, "duration": 180, "length": 8, "emailTemplate": { "subject": "OTP for {APP_NAME}", "body": "<p>Hello,</p>\n<p>Your one-time password is: <strong>{OTP}</strong></p>\n<p><i>If you didn't ask for the one-time password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" } },
+    "authToken": { "duration": 86400 },
+    "passwordResetToken": { "duration": 1800 },
+    "emailChangeToken": { "duration": 1800 },
+    "verificationToken": { "duration": 259200 },
+    "fileToken": { "duration": 180 },
+    "verificationTemplate": { "subject": "Verify your {APP_NAME} email", "body": "<p>Hello,</p>\n<p>Thank you for joining us at {APP_NAME}.</p>\n<p>Click on the button below to verify your email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-verification/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Verify</a>\n</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" },
+    "resetPasswordTemplate": { "subject": "Reset your {APP_NAME} password", "body": "<p>Hello,</p>\n<p>Click on the button below to reset your password.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-password-reset/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Reset password</a>\n</p>\n<p><i>If you didn't ask to reset your password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" },
+    "confirmEmailChangeTemplate": { "subject": "Confirm your {APP_NAME} new email address", "body": "<p>Hello,</p>\n<p>Click on the button below to confirm your new email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-email-change/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Confirm new email</a>\n</p>\n<p><i>If you didn't ask to change your email address, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" }
+  },
+  {
+    "id": "_pb_users_auth_",
+    "listRule": "id = @request.auth.id",
+    "viewRule": "id = @request.auth.id",
+    "createRule": "",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
+    "name": "users",
+    "type": "auth",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cost": 0, "hidden": true, "id": "password901924565", "max": 0, "min": 8, "name": "password", "pattern": "", "presentable": false, "required": true, "system": true, "type": "password" },
+      { "autogeneratePattern": "[a-zA-Z0-9]{50}", "hidden": true, "id": "text2504183744", "max": 60, "min": 30, "name": "tokenKey", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "exceptDomains": null, "hidden": false, "id": "email3885137012", "name": "email", "onlyDomains": null, "presentable": false, "required": true, "system": true, "type": "email" },
+      { "hidden": false, "id": "bool1547992806", "name": "emailVisibility", "presentable": false, "required": false, "system": true, "type": "bool" },
+      { "hidden": false, "id": "bool256245529", "name": "verified", "presentable": false, "required": false, "system": true, "type": "bool" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text1579384326", "max": 255, "min": 0, "name": "name", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "hidden": false, "id": "file376926767", "maxSelect": 1, "maxSize": 0, "mimeTypes": ["image/jpeg","image/png","image/svg+xml","image/gif","image/webp"], "name": "avatar", "presentable": false, "protected": false, "required": false, "system": false, "thumbs": null, "type": "file" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+      "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+    ],
+    "system": false,
+    "authRule": "",
+    "manageRule": null,
+    "authAlert": { "enabled": true, "emailTemplate": { "subject": "Login from a new location", "body": "<p>Hello,</p>\n<p>We noticed a login to your {APP_NAME} account from a new location:</p>\n<p><em>{ALERT_INFO}</em></p>\n<p><strong>If this wasn't you, you should immediately change your {APP_NAME} account password to revoke access from all other locations.</strong></p>\n<p>If this was you, you may disregard this email.</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" } },
+    "oauth2": { "mappedFields": { "id": "", "name": "name", "username": "", "avatarURL": "avatar" }, "enabled": false },
+    "passwordAuth": { "enabled": true, "identityFields": ["email"] },
+    "mfa": { "enabled": false, "duration": 1800, "rule": "" },
+    "otp": { "enabled": false, "duration": 180, "length": 8, "emailTemplate": { "subject": "OTP for {APP_NAME}", "body": "<p>Hello,</p>\n<p>Your one-time password is: <strong>{OTP}</strong></p>\n<p><i>If you didn't ask for the one-time password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" } },
+    "authToken": { "duration": 604800 },
+    "passwordResetToken": { "duration": 1800 },
+    "emailChangeToken": { "duration": 1800 },
+    "verificationToken": { "duration": 259200 },
+    "fileToken": { "duration": 180 },
+    "verificationTemplate": { "subject": "Verify your {APP_NAME} email", "body": "<p>Hello,</p>\n<p>Thank you for joining us at {APP_NAME}.</p>\n<p>Click on the button below to verify your email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-verification/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Verify</a>\n</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" },
+    "resetPasswordTemplate": { "subject": "Reset your {APP_NAME} password", "body": "<p>Hello,</p>\n<p>Click on the button below to reset your password.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-password-reset/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Reset password</a>\n</p>\n<p><i>If you didn't ask to reset your password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" },
+    "confirmEmailChangeTemplate": { "subject": "Confirm your {APP_NAME} new email address", "body": "<p>Hello,</p>\n<p>Click on the button below to confirm your new email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-email-change/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Confirm new email</a>\n</p>\n<p><i>If you didn't ask to change your email address, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>" }
+  },
+  {
+    "id": "pbc_4275539003",
+    "listRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "viewRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "name": "_authOrigins",
+    "type": "base",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text455797646", "max": 0, "min": 0, "name": "collectionRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text127846527", "max": 0, "min": 0, "name": "recordRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text4228609354", "max": 0, "min": 0, "name": "fingerprint", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": true, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": true, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE UNIQUE INDEX `idx_authOrigins_unique_pairs` ON `_authOrigins` (collectionRef, recordRef, fingerprint)" ],
+    "system": true
+  },
+  {
+    "id": "pbc_2281828961",
+    "listRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "viewRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "name": "_externalAuths",
+    "type": "base",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text455797646", "max": 0, "min": 0, "name": "collectionRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text127846527", "max": 0, "min": 0, "name": "recordRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text2462348188", "max": 0, "min": 0, "name": "provider", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text1044722854", "max": 0, "min": 0, "name": "providerId", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": true, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": true, "type": "autodate" }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_externalAuths_record_provider` ON `_externalAuths` (collectionRef, recordRef, provider)",
+      "CREATE UNIQUE INDEX `idx_externalAuths_collection_provider` ON `_externalAuths` (collectionRef, provider, providerId)"
+    ],
+    "system": true
+  },
+  {
+    "id": "pbc_2279338944",
+    "listRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "viewRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "_mfas",
+    "type": "base",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text455797646", "max": 0, "min": 0, "name": "collectionRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text127846527", "max": 0, "min": 0, "name": "recordRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text1582905952", "max": 0, "min": 0, "name": "method", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": true, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": true, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_mfas_collectionRef_recordRef` ON `_mfas` (collectionRef,recordRef)" ],
+    "system": true
+  },
+  {
+    "id": "pbc_1638494021",
+    "listRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "viewRule": "@request.auth.id != '' && recordRef = @request.auth.id && collectionRef = @request.auth.collectionId",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "_otps",
+    "type": "base",
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text455797646", "max": 0, "min": 0, "name": "collectionRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text127846527", "max": 0, "min": 0, "name": "recordRef", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": true, "type": "text" },
+      { "cost": 8, "hidden": true, "id": "password901924565", "max": 0, "min": 0, "name": "password", "pattern": "", "presentable": false, "required": true, "system": true, "type": "password" },
+      { "autogeneratePattern": "", "hidden": true, "id": "text3866985172", "max": 0, "min": 0, "name": "sentTo", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": true, "type": "text" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": true, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": true, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_otps_collectionRef_recordRef` ON `_otps` (collectionRef, recordRef)" ],
+    "system": true
+  },
+  {
+    "id": "pbc_campaigns",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "name": "campaigns",
     "type": "base",
-    "schema": [
-      { "name": "name", "type": "text", "required": true },
-      { "name": "status", "type": "select", "options": { "values": ["draft", "active", "paused", "completed"] } },
-      { "name": "email_account_id", "type": "relation", "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
-      { "name": "daily_limit", "type": "number", "options": { "min": 1, "max": 500 } },
-      { "name": "delay_between_emails", "type": "number" },
-      { "name": "tracking_enabled", "type": "bool" },
-      { "name": "ab_testing_enabled", "type": "bool" },
-      { "name": "ab_variant_split", "type": "number", "options": { "min": 0, "max": 100 } },
-      { "name": "scheduled_at", "type": "date" },
-      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_name_camp", "max": 500, "min": 1, "name": "name", "pattern": "", "presentable": true, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "hidden": false, "id": "select_status_camp", "maxSelect": 1, "name": "status", "presentable": false, "required": false, "system": false, "type": "select", "values": ["draft", "active", "paused", "completed"] },
+      { "cascadeDelete": false, "collectionId": "pbc_email_accounts", "hidden": false, "id": "relation_email_acc_camp", "maxSelect": 1, "minSelect": 0, "name": "email_account_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "number_daily_limit_camp", "max": 500, "min": 1, "name": "daily_limit", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "number_delay_camp", "max": null, "min": 0, "name": "delay_between_emails", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "bool_tracking_camp", "name": "tracking_enabled", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "bool_ab_camp", "name": "ab_testing_enabled", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "number_ab_split_camp", "max": 100, "min": 0, "name": "ab_variant_split", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "date_scheduled_camp", "max": "", "min": "", "name": "scheduled_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "cascadeDelete": false, "collectionId": "_pb_users_auth_", "hidden": false, "id": "relation_user_camp", "maxSelect": 1, "minSelect": 0, "name": "user_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_campaigns_user_id` ON `campaigns` (`user_id`)", "CREATE INDEX `idx_campaigns_status` ON `campaigns` (`status`)" ],
+    "system": false
   },
   {
+    "id": "pbc_sequences",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
     "name": "sequences",
     "type": "base",
-    "schema": [
-      { "name": "campaign_id", "type": "relation", "required": true, "options": { "collectionId": "campaigns", "maxSelect": 1 } },
-      { "name": "order", "type": "number", "required": true },
-      { "name": "subject", "type": "text" },
-      { "name": "body", "type": "editor" },
-      { "name": "delay_days", "type": "number" },
-      { "name": "variant", "type": "select", "options": { "values": ["A", "B"] } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cascadeDelete": true, "collectionId": "pbc_campaigns", "hidden": false, "id": "relation_campaign_seq", "maxSelect": 1, "minSelect": 1, "name": "campaign_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "hidden": false, "id": "number_order_seq", "max": null, "min": 1, "name": "order", "onlyInt": true, "presentable": false, "required": true, "system": false, "type": "number" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_subject_seq", "max": 1000, "min": 0, "name": "subject", "pattern": "", "presentable": true, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "convertURLs": false, "hidden": false, "id": "editor_body_seq", "maxSize": 50000, "name": "body", "presentable": false, "required": false, "system": false, "type": "editor" },
+      { "hidden": false, "id": "number_delay_seq", "max": null, "min": 0, "name": "delay_days", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "select_variant_seq", "maxSelect": 1, "name": "variant", "presentable": false, "required": false, "system": false, "type": "select", "values": ["A", "B"] },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_sequences_campaign_id` ON `sequences` (`campaign_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_contacts",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "name": "contacts",
     "type": "base",
-    "schema": [
-      { "name": "email", "type": "email", "required": true },
-      { "name": "first_name", "type": "text" },
-      { "name": "last_name", "type": "text" },
-      { "name": "company", "type": "text" },
-      { "name": "title", "type": "text" },
-      { "name": "phone", "type": "text" },
-      { "name": "custom_fields", "type": "json" },
-      { "name": "tags", "type": "json" },
-      { "name": "status", "type": "select", "options": { "values": ["active", "unsubscribed", "bounced"] } },
-      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "exceptDomains": null, "hidden": false, "id": "email_contact", "name": "email", "onlyDomains": null, "presentable": true, "required": true, "system": false, "type": "email" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_fname_contact", "max": 255, "min": 0, "name": "first_name", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_lname_contact", "max": 255, "min": 0, "name": "last_name", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_company_contact", "max": 500, "min": 0, "name": "company", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_title_contact", "max": 255, "min": 0, "name": "title", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_phone_contact", "max": 50, "min": 0, "name": "phone", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "hidden": false, "id": "json_custom_contact", "maxSize": 10000, "name": "custom_fields", "presentable": false, "required": false, "system": false, "type": "json" },
+      { "hidden": false, "id": "json_tags_contact", "maxSize": 5000, "name": "tags", "presentable": false, "required": false, "system": false, "type": "json" },
+      { "hidden": false, "id": "select_status_contact", "maxSelect": 1, "name": "status", "presentable": false, "required": false, "system": false, "type": "select", "values": ["active", "unsubscribed", "bounced"] },
+      { "cascadeDelete": false, "collectionId": "_pb_users_auth_", "hidden": false, "id": "relation_user_contact", "maxSelect": 1, "minSelect": 0, "name": "user_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_contacts_user_id` ON `contacts` (`user_id`)", "CREATE INDEX `idx_contacts_email` ON `contacts` (`email`)" ],
+    "system": false
   },
   {
+    "id": "pbc_contact_lists",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "name": "contact_lists",
     "type": "base",
-    "schema": [
-      { "name": "name", "type": "text", "required": true },
-      { "name": "description", "type": "text" },
-      { "name": "contact_count", "type": "number" },
-      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_name_cl", "max": 500, "min": 1, "name": "name", "pattern": "", "presentable": true, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_desc_cl", "max": 2000, "min": 0, "name": "description", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "hidden": false, "id": "number_count_cl", "max": null, "min": 0, "name": "contact_count", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "cascadeDelete": false, "collectionId": "_pb_users_auth_", "hidden": false, "id": "relation_user_cl", "maxSelect": 1, "minSelect": 0, "name": "user_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_contact_lists_user_id` ON `contact_lists` (`user_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_contact_list_members",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
     "name": "contact_list_members",
     "type": "base",
-    "schema": [
-      { "name": "contact_list_id", "type": "relation", "required": true, "options": { "collectionId": "contact_lists", "maxSelect": 1 } },
-      { "name": "contact_id", "type": "relation", "required": true, "options": { "collectionId": "contacts", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cascadeDelete": true, "collectionId": "pbc_contact_lists", "hidden": false, "id": "relation_list_clm", "maxSelect": 1, "minSelect": 1, "name": "contact_list_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "cascadeDelete": true, "collectionId": "pbc_contacts", "hidden": false, "id": "relation_contact_clm", "maxSelect": 1, "minSelect": 1, "name": "contact_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE UNIQUE INDEX `idx_clm_unique` ON `contact_list_members` (`contact_list_id`, `contact_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_email_accounts",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "name": "email_accounts",
     "type": "base",
-    "schema": [
-      { "name": "email", "type": "email", "required": true },
-      { "name": "display_name", "type": "text", "required": true },
-      { "name": "smtp_host", "type": "text", "required": true },
-      { "name": "smtp_port", "type": "number", "required": true },
-      { "name": "smtp_username", "type": "text", "required": true },
-      { "name": "smtp_password", "type": "text", "required": true },
-      { "name": "imap_host", "type": "text" },
-      { "name": "imap_port", "type": "number" },
-      { "name": "daily_send_limit", "type": "number" },
-      { "name": "signature", "type": "editor" },
-      { "name": "is_verified", "type": "bool" },
-      { "name": "is_warming", "type": "bool" },
-      { "name": "warming_daily_increase", "type": "number" },
-      { "name": "warming_current_limit", "type": "number" },
-      { "name": "warming_started_at", "type": "date" },
-      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "exceptDomains": null, "hidden": false, "id": "email_ea", "name": "email", "onlyDomains": null, "presentable": true, "required": true, "system": false, "type": "email" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_display_ea", "max": 255, "min": 1, "name": "display_name", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_smtp_host_ea", "max": 500, "min": 1, "name": "smtp_host", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "hidden": false, "id": "number_smtp_port_ea", "max": 65535, "min": 1, "name": "smtp_port", "onlyInt": true, "presentable": false, "required": true, "system": false, "type": "number" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_smtp_user_ea", "max": 500, "min": 1, "name": "smtp_username", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": true, "id": "text_smtp_pass_ea", "max": 500, "min": 1, "name": "smtp_password", "pattern": "", "presentable": false, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_imap_host_ea", "max": 500, "min": 0, "name": "imap_host", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "hidden": false, "id": "number_imap_port_ea", "max": 65535, "min": 0, "name": "imap_port", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "number_daily_limit_ea", "max": 10000, "min": 0, "name": "daily_send_limit", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "convertURLs": false, "hidden": false, "id": "editor_sig_ea", "maxSize": 10000, "name": "signature", "presentable": false, "required": false, "system": false, "type": "editor" },
+      { "hidden": false, "id": "bool_verified_ea", "name": "is_verified", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "bool_warming_ea", "name": "is_warming", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "number_warm_inc_ea", "max": 50, "min": 0, "name": "warming_daily_increase", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "number_warm_limit_ea", "max": 10000, "min": 0, "name": "warming_current_limit", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "date_warm_start_ea", "max": "", "min": "", "name": "warming_started_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "cascadeDelete": false, "collectionId": "_pb_users_auth_", "hidden": false, "id": "relation_user_ea", "maxSelect": 1, "minSelect": 0, "name": "user_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_email_accounts_user_id` ON `email_accounts` (`user_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_custom_domains",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "name": "custom_domains",
     "type": "base",
-    "schema": [
-      { "name": "domain", "type": "text", "required": true },
-      { "name": "tracking_subdomain", "type": "text" },
-      { "name": "dkim_verified", "type": "bool" },
-      { "name": "spf_verified", "type": "bool" },
-      { "name": "dmarc_verified", "type": "bool" },
-      { "name": "dkim_record", "type": "text" },
-      { "name": "spf_record", "type": "text" },
-      { "name": "dmarc_record", "type": "text" },
-      { "name": "user_id", "type": "relation", "options": { "collectionId": "_pb_users_auth_", "maxSelect": 1 } }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_domain_cd", "max": 500, "min": 1, "name": "domain", "pattern": "", "presentable": true, "primaryKey": false, "required": true, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_tracking_cd", "max": 255, "min": 0, "name": "tracking_subdomain", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "hidden": false, "id": "bool_dkim_cd", "name": "dkim_verified", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "bool_spf_cd", "name": "spf_verified", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "hidden": false, "id": "bool_dmarc_cd", "name": "dmarc_verified", "presentable": false, "required": false, "system": false, "type": "bool" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_dkim_rec_cd", "max": 5000, "min": 0, "name": "dkim_record", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_spf_rec_cd", "max": 5000, "min": 0, "name": "spf_record", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_dmarc_rec_cd", "max": 5000, "min": 0, "name": "dmarc_record", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "cascadeDelete": false, "collectionId": "_pb_users_auth_", "hidden": false, "id": "relation_user_cd", "maxSelect": 1, "minSelect": 0, "name": "user_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE UNIQUE INDEX `idx_custom_domains_domain` ON `custom_domains` (`domain`)", "CREATE INDEX `idx_custom_domains_user_id` ON `custom_domains` (`user_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_campaign_contacts",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
     "name": "campaign_contacts",
     "type": "base",
-    "schema": [
-      { "name": "campaign_id", "type": "relation", "required": true, "options": { "collectionId": "campaigns", "maxSelect": 1 } },
-      { "name": "contact_id", "type": "relation", "required": true, "options": { "collectionId": "contacts", "maxSelect": 1 } },
-      { "name": "contact_list_id", "type": "relation", "options": { "collectionId": "contact_lists", "maxSelect": 1 } },
-      { "name": "status", "type": "select", "options": { "values": ["pending", "in_progress", "completed", "failed", "unsubscribed"] } },
-      { "name": "current_sequence_order", "type": "number" },
-      { "name": "last_sent_at", "type": "date" }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cascadeDelete": true, "collectionId": "pbc_campaigns", "hidden": false, "id": "relation_campaign_cc", "maxSelect": 1, "minSelect": 1, "name": "campaign_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "cascadeDelete": false, "collectionId": "pbc_contacts", "hidden": false, "id": "relation_contact_cc", "maxSelect": 1, "minSelect": 1, "name": "contact_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "cascadeDelete": false, "collectionId": "pbc_contact_lists", "hidden": false, "id": "relation_list_cc", "maxSelect": 1, "minSelect": 0, "name": "contact_list_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "select_status_cc", "maxSelect": 1, "name": "status", "presentable": false, "required": false, "system": false, "type": "select", "values": ["pending", "in_progress", "completed", "failed", "unsubscribed"] },
+      { "hidden": false, "id": "number_seq_order_cc", "max": null, "min": 0, "name": "current_sequence_order", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "date_last_sent_cc", "max": "", "min": "", "name": "last_sent_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_cc_campaign_id` ON `campaign_contacts` (`campaign_id`)", "CREATE INDEX `idx_cc_contact_id` ON `campaign_contacts` (`contact_id`)", "CREATE UNIQUE INDEX `idx_cc_unique_pair` ON `campaign_contacts` (`campaign_id`, `contact_id`)" ],
+    "system": false
   },
   {
+    "id": "pbc_email_logs",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
     "name": "email_logs",
     "type": "base",
-    "schema": [
-      { "name": "campaign_id", "type": "relation", "options": { "collectionId": "campaigns", "maxSelect": 1 } },
-      { "name": "sequence_id", "type": "relation", "options": { "collectionId": "sequences", "maxSelect": 1 } },
-      { "name": "contact_id", "type": "relation", "options": { "collectionId": "contacts", "maxSelect": 1 } },
-      { "name": "email_account_id", "type": "relation", "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
-      { "name": "status", "type": "select", "options": { "values": ["sent", "delivered", "opened", "clicked", "bounced", "failed"] } },
-      { "name": "variant", "type": "select", "options": { "values": ["A", "B"] } },
-      { "name": "subject", "type": "text" },
-      { "name": "body", "type": "editor" },
-      { "name": "sent_at", "type": "date" },
-      { "name": "opened_at", "type": "date" },
-      { "name": "clicked_at", "type": "date" }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cascadeDelete": true, "collectionId": "pbc_campaigns", "hidden": false, "id": "relation_campaign_el", "maxSelect": 1, "minSelect": 0, "name": "campaign_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "cascadeDelete": false, "collectionId": "pbc_sequences", "hidden": false, "id": "relation_sequence_el", "maxSelect": 1, "minSelect": 0, "name": "sequence_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "cascadeDelete": false, "collectionId": "pbc_contacts", "hidden": false, "id": "relation_contact_el", "maxSelect": 1, "minSelect": 0, "name": "contact_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "cascadeDelete": false, "collectionId": "pbc_email_accounts", "hidden": false, "id": "relation_ea_el", "maxSelect": 1, "minSelect": 0, "name": "email_account_id", "presentable": false, "required": false, "system": false, "type": "relation" },
+      { "hidden": false, "id": "select_status_el", "maxSelect": 1, "name": "status", "presentable": false, "required": false, "system": false, "type": "select", "values": ["sent", "delivered", "opened", "clicked", "bounced", "failed"] },
+      { "hidden": false, "id": "select_variant_el", "maxSelect": 1, "name": "variant", "presentable": false, "required": false, "system": false, "type": "select", "values": ["A", "B"] },
+      { "autogeneratePattern": "", "hidden": false, "id": "text_subject_el", "max": 1000, "min": 0, "name": "subject", "pattern": "", "presentable": false, "primaryKey": false, "required": false, "system": false, "type": "text" },
+      { "convertURLs": false, "hidden": false, "id": "editor_body_el", "maxSize": 100000, "name": "body", "presentable": false, "required": false, "system": false, "type": "editor" },
+      { "hidden": false, "id": "date_sent_el", "max": "", "min": "", "name": "sent_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "hidden": false, "id": "date_opened_el", "max": "", "min": "", "name": "opened_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "hidden": false, "id": "date_clicked_el", "max": "", "min": "", "name": "clicked_at", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_el_campaign_id` ON `email_logs` (`campaign_id`)", "CREATE INDEX `idx_el_contact_id` ON `email_logs` (`contact_id`)", "CREATE INDEX `idx_el_status` ON `email_logs` (`status`)", "CREATE INDEX `idx_el_variant` ON `email_logs` (`variant`)" ],
+    "system": false
   },
   {
+    "id": "pbc_warming_logs",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id != ''",
+    "deleteRule": "@request.auth.id != ''",
     "name": "warming_logs",
     "type": "base",
-    "schema": [
-      { "name": "email_account_id", "type": "relation", "required": true, "options": { "collectionId": "email_accounts", "maxSelect": 1 } },
-      { "name": "emails_sent", "type": "number" },
-      { "name": "emails_received", "type": "number" },
-      { "name": "date", "type": "date" }
-    ]
+    "fields": [
+      { "autogeneratePattern": "[a-z0-9]{15}", "hidden": false, "id": "text3208210256", "max": 15, "min": 15, "name": "id", "pattern": "^[a-z0-9]+$", "presentable": false, "primaryKey": true, "required": true, "system": true, "type": "text" },
+      { "cascadeDelete": true, "collectionId": "pbc_email_accounts", "hidden": false, "id": "relation_ea_wl", "maxSelect": 1, "minSelect": 1, "name": "email_account_id", "presentable": false, "required": true, "system": false, "type": "relation" },
+      { "hidden": false, "id": "number_sent_wl", "max": null, "min": 0, "name": "emails_sent", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "number_received_wl", "max": null, "min": 0, "name": "emails_received", "onlyInt": true, "presentable": false, "required": false, "system": false, "type": "number" },
+      { "hidden": false, "id": "date_wl", "max": "", "min": "", "name": "date", "presentable": false, "required": false, "system": false, "type": "date" },
+      { "hidden": false, "id": "autodate2990389176", "name": "created", "onCreate": true, "onUpdate": false, "presentable": false, "system": false, "type": "autodate" },
+      { "hidden": false, "id": "autodate3332085495", "name": "updated", "onCreate": true, "onUpdate": true, "presentable": false, "system": false, "type": "autodate" }
+    ],
+    "indexes": [ "CREATE INDEX `idx_wl_email_account_id` ON `warming_logs` (`email_account_id`)", "CREATE INDEX `idx_wl_date` ON `warming_logs` (`date`)" ],
+    "system": false
   }
 ]
